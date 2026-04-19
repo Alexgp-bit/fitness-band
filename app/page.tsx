@@ -28,7 +28,7 @@ export default function Home() {
 
     const data = await res.json();
     setResponse(JSON.stringify(data));
-    cargarDatos();
+    await cargarDatos();
   }
 
   async function analizarDatos() {
@@ -66,7 +66,7 @@ export default function Home() {
       ) : (
         <ul>
           {datos.map((item, index) => (
-            <li key={index}>
+            <li key={item.id ?? index}>
               pasos: {item.pasos} | sueño: {item.sueno} | pulso: {item.pulso} | fecha: {item.fecha}
             </li>
           ))}
