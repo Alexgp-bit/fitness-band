@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [response, setResponse] = useState("");
   const [datos, setDatos] = useState<any[]>([]);
+  const [analisis, setAnalisis] = useState("");
 
   async function cargarDatos() {
     const res = await fetch("/api/health");
@@ -30,6 +31,19 @@ export default function Home() {
     cargarDatos();
   }
 
+  async function analizarDatos() {
+    const res = await fetch("/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ datos }),
+    });
+
+    const data = await res.json();
+    setAnalisis(data.resumen || "");
+  }
+
   useEffect(() => {
     cargarDatos();
   }, []);
@@ -39,6 +53,9 @@ export default function Home() {
       <h1>Fitness AI</h1>
 
       <button onClick={enviarDatos}>Enviar datos de prueba</button>
+      <button onClick={analizarDatos} style={{ marginLeft: 12 }}>
+        Analizar datos
+      </button>
 
       <pre>{response}</pre>
 
@@ -55,6 +72,9 @@ export default function Home() {
           ))}
         </ul>
       )}
+
+      <h2>Análisis</h2>
+      <p>{analisis || "Todavía no hay análisis."}</p>
     </main>
   );
 }
