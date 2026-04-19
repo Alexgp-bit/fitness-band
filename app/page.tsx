@@ -27,21 +27,33 @@ export default function Home() {
     });
 
     const data = await res.json();
-    setResponse(JSON.stringify(data));
+    setResponse(JSON.stringify(data, null, 2));
     await cargarDatos();
   }
 
   async function analizarDatos() {
-    const res = await fetch("/api/analyze", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ datos }),
-    });
+    try {
+      setAnalisis("Analizando...");
 
-    const data = await res.json();
-    setAnalisis(data.resumen || "");
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ datos }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setAnalisis(`Error: ${JSON.stringify(data)}`);
+        return;
+      }
+
+      setAnalisis(data.resumen || JSON.stringify(data));
+    } catch (error: any) {
+      setAnalisis(`Error al analizar: ${error?.message || "desconocido"}`);
+    }
   }
 
   useEffect(() => {
@@ -74,7 +86,7 @@ export default function Home() {
       )}
 
       <h2>Análisis</h2>
-      <p>{analisis || "Todavía no hay análisis."}</p>
+      <pre>{analisis || "Todavía no hay análisis."}</pre>
     </main>
   );
 }
