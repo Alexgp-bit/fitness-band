@@ -69,6 +69,38 @@ export default function Home() {
         Analizar datos
       </button>
 
+      <input
+  type="file"
+  accept=".csv"
+  onChange={async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const text = await file.text();
+
+    const lines = text.split("\n").slice(1);
+
+    for (const line of lines) {
+      if (!line.trim()) continue;
+
+      const [pasos, sueno, pulso] = line.split(",");
+
+      await fetch("/api/health", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          pasos: Number(pasos),
+          sueno: Number(sueno),
+          pulso: Number(pulso),
+        }),
+      });
+    }
+
+    await cargarDatos();
+  }}
+/>
       <pre>{response}</pre>
 
       <h2>Datos guardados</h2>
